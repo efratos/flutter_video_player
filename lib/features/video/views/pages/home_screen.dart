@@ -66,51 +66,62 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return BlocBuilder<DisplayListModeCubit, bool>(
       builder: (context, liststate) {
-        return Scaffold(
-          appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: const Text("Video Player"),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.star),
-                  onPressed: _launchAppStore,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: _shareApp,
-                ),
-                IconButton(
-                  icon: Icon(liststate ? Icons.grid_on : Icons.list),
-                  onPressed: () {
-                    setState(() {
-                      context.read<DisplayListModeCubit>().toggleDisplayMode();
-                    });
-                  },
-                ),
-              ]),
-          body: BlocBuilder<VideoItemBloc, VideoItemState>(
-            builder: (context, state) {
-              if (state is ItemLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is ItemSuccess) {
-                return liststate
-                    ? ListViewWidget(
-                        videos: state.items.videos,
-                        callback: (index) {
-                          navigateToVideoPlayer(state.items.videos[index]);
-                        },
-                      )
-                    : GridViewWidget(
-                        videos: state.items.videos,
-                        callback: (index) {
-                          navigateToVideoPlayer(state.items.videos[index]);
-                        },
-                      );
-              } else {
-                return Text("error");
-              }
-            },
-          ),
+        return BlocBuilder<VideoItemBloc, VideoItemState>(
+          builder: (context, state) {
+            return Scaffold(
+              backgroundColor: state is ItemSuccess
+                  ? Color(int.parse(
+                      state.items.appBackgroundHexColor.replaceAll('#', ''),
+                      radix: 16))
+                  : Colors.white,
+              appBar: AppBar(
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  title: const Text("Video Player"),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.star),
+                      onPressed: _launchAppStore,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.share),
+                      onPressed: _shareApp,
+                    ),
+                    IconButton(
+                      icon: Icon(liststate ? Icons.grid_on : Icons.list),
+                      onPressed: () {
+                        setState(() {
+                          context
+                              .read<DisplayListModeCubit>()
+                              .toggleDisplayMode();
+                        });
+                      },
+                    ),
+                  ]),
+              body: Builder(
+                builder: (context) {
+                  if (state is ItemLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is ItemSuccess) {
+                    return liststate
+                        ? ListViewWidget(
+                            videos: state.items.videos,
+                            callback: (index) {
+                              navigateToVideoPlayer(state.items.videos[index]);
+                            },
+                          )
+                        : GridViewWidget(
+                            videos: state.items.videos,
+                            callback: (index) {
+                              navigateToVideoPlayer(state.items.videos[index]);
+                            },
+                          );
+                  } else {
+                    return Text("error");
+                  }
+                },
+              ),
+            );
+          },
         );
       },
     );
