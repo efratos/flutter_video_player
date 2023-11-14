@@ -31,33 +31,34 @@ class _SplashScreenState extends State<SplashScreen> {
             context,
             MaterialPageRoute(builder: (context) => MyHomePage()),
           );
-        } else if (state is ItemError) {
-          // FullScreenLoadingOverlay.remove();
-          // TopAlertMessage.show(context, MessageType.error, state.errorMessage);
         }
       },
       child: Scaffold(
         body: BlocBuilder<VideoItemBloc, VideoItemState>(
           builder: (context, state) {
-            return state is ItemLoading
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('Loading...'),
-                      ],
-                    ),
-                  )
-                : Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context.read<VideoItemBloc>().add(LoadItems());
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  );
+            if (state is ItemLoading) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading...'),
+                  ],
+                ),
+              );
+            } else if (state is ItemError) {
+              return Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.read<VideoItemBloc>().add(LoadItems());
+                  },
+                  child: const Text('Retry'),
+                ),
+              );
+            } else {
+              return Container();
+            }
           },
         ),
       ),

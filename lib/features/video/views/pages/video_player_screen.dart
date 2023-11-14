@@ -67,8 +67,8 @@ class _VideoPLayerScreenState extends State<VideoPLayerScreen> {
   }
 
   Future<void> initializePlayer() async {
-    videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse('https://app.et/devtest/videos/video1.mp4'));
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(widget.video.videoUrl!));
 
     await videoPlayerController.initialize();
     _createChewieController();
